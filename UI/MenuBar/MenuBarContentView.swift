@@ -698,10 +698,7 @@ private struct TransportControlButton: View {
     @State private var isHovered = false
 
     var body: some View {
-        Button(action: {
-            NSLog("[UI] Transport button clicked: \(systemName)")
-            action()
-        }) {
+        Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 13, weight: isProminent ? .bold : .semibold))
                 .foregroundStyle(isProminent ? Color.white : Color(red: 1.0, green: 0.16, blue: 0.62))
@@ -954,6 +951,176 @@ private struct SourceBadge: View {
             return .green
         case .error:
             return .red
+        }
+    }
+}
+
+// MARK: - Audio Device Picker
+
+private struct AudioDevicePickerButton: View {
+    @ObservedObject var audioDeviceHelper: AudioDeviceHelper
+    @State private var showPicker = false
+    
+    var body: some View {
+        Button(action: { showPicker.toggle() }) {
+            HStack(spacing: 4) {
+                Image(systemName: "hifispeaker.fill")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(Color(red: 0.85, green: 0.35, blue: 0.65).opacity(0.7))
+                
+                Text(audioDeviceHelper.currentOutputDeviceName ?? "No Device")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 7, weight: .semibold))
+                    .foregroundStyle(.secondary.opacity(0.6))
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(Color(red: 1.0, green: 0.88, blue: 0.96).opacity(0.6))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(Color(red: 0.95, green: 0.70, blue: 0.85).opacity(0.3), lineWidth: 0.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showPicker, arrowEdge: .bottom) {
+            AudioDevicePickerView(audioDeviceHelper: audioDeviceHelper)
+        }
+        .help("Click to change audio output device")
+    }
+}
+
+private struct AudioDevicePickerView: View {
+    @ObservedObject var audioDeviceHelper: AudioDeviceHelper
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Audio Output Device")
+                .font(.headline)
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
+            
+            Divider()
+            
+            ScrollView {
+                VStack(spacing: 2) {
+                    ForEach(audioDeviceHelper.availableDevices) { device in
+                        AudioDeviceRow(
+                            device: device,
+                            isSelected: device.id == audioDeviceHelper.currentDeviceID,
+                            onSelect: {
+                                _ = audioDeviceHelper.setOutputDevice(device)
+                                dismiss()
+                            }
+                        )
+                    }
+                }
+                .padding(.vertical, 6)
+            }
+            .frame(maxHeight: 300)
+        }
+        .frame(width: 280)
+        .background(Color(nsColor: .controlBackgroundColor))
+    }
+}
+
+private struct AudioDeviceRow: View {
+    let device: AudioDevice
+    let isSelected: Bool
+    let onSelect: () -> Void
+    
+    @State private var isHovered = false
+    
+    var body: some View {
+        Button(action: onSelect) {
+            HStack(spacing: 10) {
+                deviceIcon
+                    .foregroundStyle(isSelected ? Color(red: 0.85, green: 0.35, blue: 0.65) : .secondary)
+                    .frame(width: 20)
+                
+                Text(device.name)
+                    .font(.system(size: 13))
+                    .foregroundStyle(isSelected ? .primary : .secondary)
+                    .lineLimit(1)
+                
+                Spacer()
+                
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color(red: 0.85, green: 0.35, blue: 0.65))
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(
+                Rectangle()
+                    .fill(backgroundFill)
+            )
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            isHovered = hovering
+        }
+    }
+    
+    private var deviceIcon: some View {
+        let name = device.name.lowercased()
+        let symbolName = determineSymbolName(from: name)
+        
+        return AnyView(
+            Image(systemName: symbolName)
+                .font(.system(size: 14, weight: .medium))
+        )
+    }
+    
+    private func determineSymbolName(from deviceName: String) -> String {
+        // Check for any earphones/headphones - use airpods.max symbol (􀪷)
+        if deviceName.contains("airpods") ||
+           deviceName.contains("headphone") || 
+           deviceName.contains("headset") ||
+           deviceName.contains("earphone") ||
+           deviceName.contains("earbud") ||
+           deviceName.contains("beats") ||
+           deviceName.contains("bose") ||
+           deviceName.contains("sony wh") ||
+           deviceName.contains("sennheiser") {
+            return "airpods.max"  // 􀪷 Symbol for all headphones/earphones
+        }
+        
+        // Bluetooth speakers
+        if deviceName.contains("bluetooth") {
+            return "speaker.wave.2.fill"
+        }
+        
+        // Display/Monitor audio
+        if deviceName.contains("display") || 
+           deviceName.contains("monitor") || 
+           deviceName.contains("hdmi") ||
+           deviceName.contains("thunderbolt") {
+            return "display"
+        }
+        
+        // Default speaker icon
+        return "hifispeaker.2.fill"
+    }
+    
+    private var backgroundFill: Color {
+        if isSelected {
+            return Color(red: 1.0, green: 0.88, blue: 0.96).opacity(0.4)
+        } else if isHovered {
+            return Color.primary.opacity(0.05)
+        } else {
+            return .clear
         }
     }
 }

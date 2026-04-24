@@ -299,24 +299,20 @@ struct MusicAppleScriptClient: MusicAppleScriptControlling {
         end tell
         """
         
-        do {
-            var errorInfo: NSDictionary?
-            guard let appleScript = NSAppleScript(source: script) else {
-                return nil
-            }
-            let result = appleScript.executeAndReturnError(&errorInfo)
-            
-            if let errorInfo {
-                NSLog("[MusicControl] Chrome tab query error: \(errorInfo)")
-                return nil
-            }
-            
-            if let tabTitle = result.stringValue, !tabTitle.isEmpty {
-                // Parse title - YouTube Music format is usually "Song Name - Artist - YouTube Music"
-                return parseYouTubeMusicTitle(tabTitle)
-            }
-        } catch {
-            NSLog("[MusicControl] Error querying Chrome: \(error)")
+        var errorInfo: NSDictionary?
+        guard let appleScript = NSAppleScript(source: script) else {
+            return nil
+        }
+        let result = appleScript.executeAndReturnError(&errorInfo)
+        
+        if let errorInfo {
+            NSLog("[MusicControl] Chrome tab query error: \(errorInfo)")
+            return nil
+        }
+        
+        if let tabTitle = result.stringValue, !tabTitle.isEmpty {
+            // Parse title - YouTube Music format is usually "Song Name - Artist - YouTube Music"
+            return parseYouTubeMusicTitle(tabTitle)
         }
         
         return nil
@@ -590,3 +586,4 @@ struct MusicAppleScriptClient: MusicAppleScriptControlling {
         cgEvent.post(tap: .cghidEventTap)
     }
 }
+
