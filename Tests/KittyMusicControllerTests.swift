@@ -45,12 +45,27 @@ final class KittyMusicControllerTests: XCTestCase {
         let appState = AppState()
         let musicClient = SlowMusicClient()
         let coordinator = PlaybackCoordinator(appState: appState, musicClient: musicClient)
+        
+        // Stop background polling for this test
+        coordinator.stopBackgroundPolling()
 
         async let first: Void = coordinator.refreshPlayback()
         async let second: Void = coordinator.refreshPlayback()
         _ = await (first, second)
 
         XCTAssertEqual(musicClient.currentPlaybackCallCount, 1)
+    }
+    
+    func testCoordinatorStartsBackgroundPolling() async {
+        let appState = AppState()
+        let musicClient = SlowMusicClient()
+        let coordinator = PlaybackCoordinator(appState: appState, musicClient: musicClient)
+        
+        // Wait for initial refresh plus one poll cycle
+        try? await Task.sleep(for: .milliseconds(300))
+        
+        // Should have called at least once (initial refresh)
+        XCTAssertGreaterThanOrEqual(musicClient.currentPlaybackCallCount, 1)
     }
 }
 

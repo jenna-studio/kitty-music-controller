@@ -18,6 +18,14 @@ final class MenuBarController {
     private var localEventMonitor: Any?
     private var cancellables = Set<AnyCancellable>()
 
+    private static let statusIconSymbolKey = "statusIconSymbol"
+    private static let statusIconCustomImageBookmarkKey = "statusIconCustomImageBookmark"
+    private static let statusIconUseTemplateKey = "statusIconUseTemplate"
+
+    private var statusIconSymbol: String = UserDefaults.standard.string(forKey: MenuBarController.statusIconSymbolKey) ?? "music.quarternote.3"
+    private var customIconURL: URL? = nil
+    private var useTemplate: Bool = UserDefaults.standard.object(forKey: MenuBarController.statusIconUseTemplateKey) as? Bool ?? false
+
     init(appState: AppState, coordinator: PlaybackCoordinator) {
         self.appState = appState
         self.coordinator = coordinator
@@ -31,12 +39,14 @@ final class MenuBarController {
             defer: true
         )
 
-        configureStatusItem()
         configurePanel()
+        loadCustomIconFromBookmark()
+        configureStatusItem()
         observeState()
     }
 
     @objc private func togglePanel() {
+        print("[MenuBarController] togglePanel called. Panel visible: \(panel.isVisible)")
         if panel.isVisible {
             closePanel()
         } else {
@@ -45,11 +55,20 @@ final class MenuBarController {
     }
 
     private func configureStatusItem() {
-        guard let button = statusItem.button else { return }
+        print("[MenuBarController] Configuring status item. Button exists: \(statusItem.button != nil)")
+        guard let button = statusItem.button else { 
+            print("[MenuBarController] ERROR: Status item button is nil!")
+            return 
+        }
         button.target = self
         button.action = #selector(togglePanel)
-        button.sendAction(on: [.leftMouseUp])
+        button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        
+        // Ensure button is enabled
+        button.isEnabled = true
+        
         updateStatusIcon(isPlaying: appState.playback?.isPlaying == true)
+        print("[MenuBarController] Status item configured with action: \(String(describing: button.action))")
     }
 
     private func configurePanel() {
@@ -78,12 +97,100 @@ final class MenuBarController {
                 self?.updateStatusIcon(isPlaying: isPlaying)
             }
             .store(in: &cancellables)
+
+        NotificationCenter.default.addObserver(forName: .init("StatusIconSymbolDidChange"), object: nil, queue: .main) { [weak self] note in
+            guard let symbol = note.object as? String else { return }
+            Task { @MainActor [weak self] in
+                self?.setStatusIconSymbol(symbol)
+            }
+        }
+        NotificationCenter.default.addObserver(forName: .init("StatusIconCustomImageDidChange"), object: nil, queue: .main) { [weak self] note in
+            let url = note.object as? URL
+            Task { @MainActor [weak self] in
+                self?.setCustomStatusIcon(url: url)
+            }
+        }
+        NotificationCenter.default.addObserver(forName: .init("StatusIconUseTemplateDidChange"), object: nil, queue: .main) { [weak self] note in
+            guard let template = note.object as? Bool else { return }
+            Task { @MainActor [weak self] in
+                self?.setUseTemplate(template)
+            }
+        }
+        
+        // Handle toggle panel notification from View menu
+        NotificationCenter.default.addObserver(forName: .init("ToggleMenuBarPanel"), object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.togglePanel()
+            }
+        }
     }
 
     private func updateStatusIcon(isPlaying: Bool) {
-        guard let button = statusItem.button else { return }
-        button.image = NSImage(systemSymbolName: "music.quarternote.3", accessibilityDescription: "Kitty Music Controller")
-        button.image?.isTemplate = true
+        guard let button = statusItem.button else { 
+            print("[MenuBarController] Cannot update icon - button is nil")
+            return 
+        }
+        
+        if let url = customIconURL, let image = NSImage(contentsOf: url) {
+            button.image = image
+            button.image?.isTemplate = useTemplate
+            print("[MenuBarController] Updated to custom icon from: \(url.lastPathComponent)")
+        } else {
+            // Default to a colored SF Symbol
+            let config = NSImage.SymbolConfiguration(pointSize: NSFont.systemFontSize, weight: .regular)
+            let image = NSImage(systemSymbolName: statusIconSymbol, accessibilityDescription: "Kitty Music Controller")?.withSymbolConfiguration(config)
+            button.image = image
+            // Full color by default
+            button.image?.isTemplate = false
+            print("[MenuBarController] Updated to SF Symbol: \(statusIconSymbol)")
+        }
+    }
+
+    func setStatusIconSymbol(_ symbolName: String) {
+        statusIconSymbol = symbolName
+        UserDefaults.standard.set(symbolName, forKey: Self.statusIconSymbolKey)
+        updateStatusIcon(isPlaying: appState.playback?.isPlaying == true)
+    }
+
+    func setCustomStatusIcon(url: URL?) {
+        customIconURL = url
+        saveCustomIconBookmark(for: url)
+        updateStatusIcon(isPlaying: appState.playback?.isPlaying == true)
+    }
+
+    func setUseTemplate(_ template: Bool) {
+        useTemplate = template
+        UserDefaults.standard.set(template, forKey: Self.statusIconUseTemplateKey)
+        updateStatusIcon(isPlaying: appState.playback?.isPlaying == true)
+    }
+
+    private func loadCustomIconFromBookmark() {
+        guard let data = UserDefaults.standard.data(forKey: Self.statusIconCustomImageBookmarkKey) else { customIconURL = nil; return }
+        var isStale = false
+        do {
+            let url = try URL(resolvingBookmarkData: data, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale)
+            if url.startAccessingSecurityScopedResource() {
+                customIconURL = url
+            } else {
+                customIconURL = url
+            }
+        } catch {
+            print("[MenuBarController] Failed to resolve custom icon bookmark: \(error)")
+            customIconURL = nil
+        }
+    }
+
+    private func saveCustomIconBookmark(for url: URL?) {
+        if let url {
+            do {
+                let data = try url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil)
+                UserDefaults.standard.set(data, forKey: Self.statusIconCustomImageBookmarkKey)
+            } catch {
+                print("[MenuBarController] Failed to create bookmark: \(error)")
+            }
+        } else {
+            UserDefaults.standard.removeObject(forKey: Self.statusIconCustomImageBookmarkKey)
+        }
     }
 
     private func showPanel() {

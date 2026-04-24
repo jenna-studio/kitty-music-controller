@@ -112,8 +112,6 @@ enum AppCommands {
                 NSLog("[AppCommands] ERROR opening \(name): \(error.localizedDescription)")
             } else if let app {
                 NSLog("[AppCommands] Successfully opened \(name): \(app.localizedName ?? "Unknown")")
-                // Activate the app after opening
-                app.activate(options: .activateIgnoringOtherApps)
             } else {
                 NSLog("[AppCommands] Opened \(name) but no app instance returned")
             }

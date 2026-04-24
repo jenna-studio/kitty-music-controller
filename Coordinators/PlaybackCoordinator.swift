@@ -9,6 +9,7 @@ final class PlaybackCoordinator {
     private let appState: AppState
     private let musicClient: MusicAppleScriptControlling
     private var pollingTask: Task<Void, Never>?
+    private var backgroundPollingTask: Task<Void, Never>?
     private var isRefreshingPlayback = false
 
     init(
@@ -17,9 +18,45 @@ final class PlaybackCoordinator {
     ) {
         self.appState = appState
         self.musicClient = musicClient
+        
+        // Start background polling immediately
+        startBackgroundPolling()
+    }
+    
+    deinit {
+        backgroundPollingTask?.cancel()
+        pollingTask?.cancel()
+    }
+    
+    /// Start background polling for playback state (slower interval)
+    func startBackgroundPolling() {
+        guard backgroundPollingTask == nil else { return }
+        print("[PlaybackCoordinator] Starting background polling")
+        backgroundPollingTask = Task { [weak self] in
+            // Initial refresh
+            await self?.refreshPlayback()
+            
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(5)) // Poll every 5 seconds in background
+                await self?.refreshPlayback()
+            }
+        }
+    }
+    
+    /// Stop background polling
+    func stopBackgroundPolling() {
+        print("[PlaybackCoordinator] Stopping background polling")
+        backgroundPollingTask?.cancel()
+        backgroundPollingTask = nil
     }
 
     func menuDidOpen() {
+        print("[PlaybackCoordinator] Menu opened - switching to fast polling")
+        // Stop background polling (slower)
+        backgroundPollingTask?.cancel()
+        backgroundPollingTask = nil
+        
+        // Start fast polling for menu
         guard pollingTask == nil else { return }
         pollingTask = Task { [weak self] in
             await self?.pollLoop()
@@ -27,8 +64,12 @@ final class PlaybackCoordinator {
     }
 
     func menuDidClose() {
+        print("[PlaybackCoordinator] Menu closed - switching to background polling")
         pollingTask?.cancel()
         pollingTask = nil
+        
+        // Resume background polling (slower)
+        startBackgroundPolling()
     }
 
     func refreshPlayback() async {
