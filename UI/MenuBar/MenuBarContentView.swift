@@ -64,7 +64,7 @@ private struct NowPlayingShowcaseView: View {
     @State private var frozenVinylAngle: Double = 0
     @State private var spinStartDate: Date?
     @State private var playButtonBounce = false
-    @State private var stopperForcedEngaged = false
+    @State private var stopperOverrideEngaged: Bool?
     @State private var needlePulse = false
     @State private var floatingNotes: [FloatingMusicNote] = FloatingMusicNote.makeRandomSet()
 
@@ -118,7 +118,7 @@ private struct NowPlayingShowcaseView: View {
                         .disabled(isDisabled)
 
                         TransportControlButton(
-                            systemName: isPlaying ? "pause.fill" : "play.fill",
+                            systemName: stopperIsEngaged ? "pause.fill" : "play.fill",
                             isProminent: true,
                             pulse: playButtonBounce,
                             action: triggerPlayPause
@@ -136,7 +136,7 @@ private struct NowPlayingShowcaseView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 25)
                 .overlay {
-                    if isPlaying {
+                    if stopperIsEngaged {
                         floatingNotesAccent
                     }
                 }
@@ -224,7 +224,10 @@ private struct NowPlayingShowcaseView: View {
         }
         .onChange(of: isPlaying) {
             syncSpinState()
-            stopperForcedEngaged = false
+            stopperOverrideEngaged = nil
+        }
+        .onChange(of: stopperOverrideEngaged) {
+            syncSpinState()
         }
     }
 
@@ -378,63 +381,61 @@ private struct NowPlayingShowcaseView: View {
     private var vinylStopper: some View {
         Button(action: handleStopperTap) {
             ZStack(alignment: .top) {
-                Capsule()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.95),
-                                Color(red: 0.86, green: 0.86, blue: 0.90),
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
+                ZStack(alignment: .top) {
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.95),
+                                    Color(red: 0.86, green: 0.86, blue: 0.90),
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
                         )
-                    )
-                    .frame(width: 9, height: 84)
-                    .overlay {
-                        Capsule()
-                            .stroke(Color.black.opacity(0.12), lineWidth: 0.8)
-                    }
+                        .frame(width: 9, height: 84)
+                        .overlay {
+                            Capsule()
+                                .stroke(Color.black.opacity(0.12), lineWidth: 0.8)
+                        }
+
+                    Circle()
+                        .fill(Color(red: 0.96, green: 0.90, blue: 0.95))
+                        .frame(width: 20, height: 20)
+                        .overlay {
+                            Circle()
+                                .stroke(Color.black.opacity(0.14), lineWidth: 0.8)
+                        }
+                        .scaleEffect(needlePulse ? 1.16 : 1.0)
+                        .shadow(
+                            color: Color.white.opacity(needlePulse ? 0.55 : 0.18),
+                            radius: needlePulse ? 5 : 1
+                        )
+                        .offset(y: 67)
+                }
+                .offset(y: -5)
+                .rotationEffect(.degrees(stopperIsEngaged ? 22 : -12), anchor: .top)
 
                 Circle()
                     .fill(Color(red: 0.25, green: 0.25, blue: 0.30))
                     .frame(width: 14, height: 14)
                     .offset(y: -5)
-
-                Circle()
-                    .fill(Color(red: 0.96, green: 0.90, blue: 0.95))
-                    .frame(width: 20, height: 20)
-                    .overlay {
-                        Circle()
-                            .stroke(Color.black.opacity(0.14), lineWidth: 0.8)
-                    }
-                    .scaleEffect(needlePulse ? 1.16 : 1.0)
-                    .shadow(
-                        color: Color.white.opacity(needlePulse ? 0.55 : 0.18),
-                        radius: needlePulse ? 5 : 1
-                    )
-                    .offset(y: 67)
             }
+            .frame(width: 44, height: 98)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .rotationEffect(.degrees(stopperIsEngaged ? 12 : -18), anchor: .top)
         .offset(x: 80, y: -46)
         .animation(.spring(response: 0.45, dampingFraction: 0.82), value: stopperIsEngaged)
         .help(stopperIsEngaged ? "Click stopper to stop." : "Click stopper to resume.")
     }
 
     private var stopperIsEngaged: Bool {
-        stopperForcedEngaged || isPlaying
+        stopperOverrideEngaged ?? isPlaying
     }
 
     private func handleStopperTap() {
-        if stopperIsEngaged {
-            // Lift the stopper first, then pause playback.
-            stopperForcedEngaged = false
-        } else {
-            // Engage the stopper first, then resume playback.
-            stopperForcedEngaged = true
-        }
+        stopperOverrideEngaged = !stopperIsEngaged
         triggerPlayPause()
     }
 
@@ -452,7 +453,7 @@ private struct NowPlayingShowcaseView: View {
 
     private func syncSpinState() {
         let now = Date()
-        if isPlaying {
+        if stopperIsEngaged {
             spinStartDate = now
         } else {
             if let spinStartDate {
@@ -465,7 +466,7 @@ private struct NowPlayingShowcaseView: View {
     }
 
     private func vinylAngle(at date: Date) -> Double {
-        guard isPlaying, let spinStartDate else { return frozenVinylAngle }
+        guard stopperIsEngaged, let spinStartDate else { return frozenVinylAngle }
         let delta = (date.timeIntervalSince(spinStartDate) / 4.0) * 360
         return normalizedAngle(frozenVinylAngle + delta)
     }
