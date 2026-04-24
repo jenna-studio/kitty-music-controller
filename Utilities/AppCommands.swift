@@ -56,29 +56,67 @@ enum AppCommands {
     }
 
     static func openMediaApp(_ shortcut: MediaShortcut) {
+        NSLog("[AppCommands] Attempting to open: \(shortcut)")
+        
+        // Special handling for Apple Music - try URL scheme first
+        if shortcut == .appleMusic {
+            if let musicURL = URL(string: "music://") {
+                NSLog("[AppCommands] Trying Apple Music URL scheme: music://")
+                if NSWorkspace.shared.open(musicURL) {
+                    NSLog("[AppCommands] Successfully opened Apple Music via URL scheme")
+                    return
+                } else {
+                    NSLog("[AppCommands] URL scheme failed, trying other methods")
+                }
+            }
+        }
+        
         let config = NSWorkspace.OpenConfiguration()
+        config.activates = true // Ensure app activates
 
+        // Try bundle identifiers first
         for bundleID in shortcut.bundleIdentifiers {
             if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
-                openApp(at: appURL, configuration: config)
+                NSLog("[AppCommands] Found app via bundle ID: \(bundleID) at \(appURL.path)")
+                openApp(at: appURL, configuration: config, name: "\(shortcut)")
                 return
+            } else {
+                NSLog("[AppCommands] Bundle ID not found: \(bundleID)")
             }
         }
 
+        // Try known paths
         for appPath in shortcut.knownAppPaths {
             if FileManager.default.fileExists(atPath: appPath) {
-                openApp(at: URL(fileURLWithPath: appPath), configuration: config)
+                NSLog("[AppCommands] Found app at path: \(appPath)")
+                openApp(at: URL(fileURLWithPath: appPath), configuration: config, name: "\(shortcut)")
                 return
+            } else {
+                NSLog("[AppCommands] Path not found: \(appPath)")
             }
         }
 
+        // Try fallback URL (for YouTube Music)
         if let fallbackURL = shortcut.fallbackURL {
+            NSLog("[AppCommands] Using fallback URL: \(fallbackURL)")
             NSWorkspace.shared.open(fallbackURL)
+            return
         }
+        
+        NSLog("[AppCommands] ERROR: Could not open \(shortcut) - no method succeeded")
     }
 
-    private static func openApp(at appURL: URL, configuration: NSWorkspace.OpenConfiguration) {
-        NSWorkspace.shared.openApplication(at: appURL, configuration: configuration)
-        NSApp.activate(ignoringOtherApps: true)
+    private static func openApp(at appURL: URL, configuration: NSWorkspace.OpenConfiguration, name: String) {
+        NSWorkspace.shared.openApplication(at: appURL, configuration: configuration) { app, error in
+            if let error {
+                NSLog("[AppCommands] ERROR opening \(name): \(error.localizedDescription)")
+            } else if let app {
+                NSLog("[AppCommands] Successfully opened \(name): \(app.localizedName ?? "Unknown")")
+                // Activate the app after opening
+                app.activate(options: .activateIgnoringOtherApps)
+            } else {
+                NSLog("[AppCommands] Opened \(name) but no app instance returned")
+            }
+        }
     }
 }
