@@ -25,17 +25,6 @@ enum AppCommands {
             }
         }
 
-        var appNames: [String] {
-            switch self {
-            case .spotify:
-                return ["Spotify"]
-            case .appleMusic:
-                return ["Music", "Music.app", "Apple Music", "iTunes"]
-            case .ytMusic:
-                return ["YT Music", "YouTube Music", "YouTube Music.app"]
-            }
-        }
-
         var fallbackURL: URL? {
             switch self {
             case .appleMusic:
@@ -72,13 +61,6 @@ enum AppCommands {
         for bundleID in shortcut.bundleIdentifiers {
             if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
                 openApp(at: appURL, configuration: config)
-                return
-            }
-        }
-
-        for appName in shortcut.appNames {
-            if let appPath = NSWorkspace.shared.fullPath(forApplication: appName) {
-                openApp(at: URL(fileURLWithPath: appPath), configuration: config)
                 return
             }
         }
