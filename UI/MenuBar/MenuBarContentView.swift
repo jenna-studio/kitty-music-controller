@@ -8,6 +8,7 @@ import SwiftUI
 struct MenuBarContentView: View {
     @ObservedObject var appState: AppState
     let coordinator: PlaybackCoordinator
+    @StateObject private var audioDeviceHelper = AudioDeviceHelper()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -30,6 +31,7 @@ struct MenuBarContentView: View {
             title: appState.playback?.title ?? "Nothing playing",
             artist: appState.playback?.artistLine ?? "Play media on your Mac to start", 
             album: appState.playback?.album,
+            audioDeviceName: audioDeviceHelper.currentOutputDeviceName,
 
             onPrevious: { Task { await coordinator.previousTrack() } },
             onPlayPause: { Task { await coordinator.playPause() } },
@@ -58,6 +60,7 @@ private struct NowPlayingShowcaseView: View {
     let title: String
     let artist: String
     let album: String?
+    let audioDeviceName: String?
     let onPrevious: () -> Void
     let onPlayPause: () -> Void
     let onNext: () -> Void
@@ -131,6 +134,31 @@ private struct NowPlayingShowcaseView: View {
                             action: onNext
                         )
                         .disabled(isDisabled)
+                    }
+                    
+                    // Audio output device indicator
+                    if let deviceName = audioDeviceName {
+                        HStack(spacing: 4) {
+                            Image(systemName: "hifispeaker.fill")
+                                .font(.system(size: 9, weight: .medium))
+                                .foregroundStyle(Color(red: 0.85, green: 0.35, blue: 0.65).opacity(0.7))
+                            
+                            Text(deviceName)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color(red: 1.0, green: 0.88, blue: 0.96).opacity(0.6))
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(Color(red: 0.95, green: 0.70, blue: 0.85).opacity(0.3), lineWidth: 0.5)
+                        )
+                        .padding(.top, 6)
                     }
                 }
                 .padding(.horizontal, 24)
@@ -670,7 +698,10 @@ private struct TransportControlButton: View {
     @State private var isHovered = false
 
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            NSLog("[UI] Transport button clicked: \(systemName)")
+            action()
+        }) {
             Image(systemName: systemName)
                 .font(.system(size: 13, weight: isProminent ? .bold : .semibold))
                 .foregroundStyle(isProminent ? Color.white : Color(red: 1.0, green: 0.16, blue: 0.62))
@@ -839,14 +870,14 @@ private struct MarqueeText: View {
                         containerWidth = width
                         startScrolling()
                     }
-                    .onChange(of: width) { newWidth in
+                    .onChange(of: width) { oldValue, newWidth in
                         containerWidth = newWidth
                         startScrolling()
                     }
-                    .onChange(of: text) { _ in
+                    .onChange(of: text) {
                         startScrolling()
                     }
-                    .onChange(of: isActive) { _ in
+                    .onChange(of: isActive) {
                         startScrolling()
                     }
                 } else {

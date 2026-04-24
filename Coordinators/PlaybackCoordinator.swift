@@ -49,18 +49,21 @@ final class PlaybackCoordinator {
     }
 
     func playPause() async {
+        NSLog("[Coordinator] Play/Pause button pressed")
         await performControl { [self] in
             try await self.musicClient.playPause()
         }
     }
 
     func nextTrack() async {
+        NSLog("[Coordinator] Next track button pressed")
         await performControl { [self] in
             try await self.musicClient.nextTrack()
         }
     }
 
     func previousTrack() async {
+        NSLog("[Coordinator] Previous track button pressed")
         await performControl { [self] in
             try await self.musicClient.previousTrack()
         }
@@ -84,14 +87,20 @@ final class PlaybackCoordinator {
     }
 
     private func performControl(_ action: @escaping () async throws -> Void) async {
+        NSLog("[Coordinator] Starting control action")
         appState.isPerformingAction = true
         appState.errorMessage = nil
-        defer { appState.isPerformingAction = false }
+        defer { 
+            appState.isPerformingAction = false
+            NSLog("[Coordinator] Control action completed")
+        }
 
         do {
             try await action()
+            NSLog("[Coordinator] Action succeeded, refreshing playback")
             await refreshPlayback()
         } catch {
+            NSLog("[Coordinator] Action failed: \(error.localizedDescription)")
             appState.errorMessage = presentableMessage(for: error)
         }
     }

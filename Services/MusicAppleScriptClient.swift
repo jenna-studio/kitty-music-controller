@@ -21,15 +21,59 @@ struct MusicAppleScriptClient: MusicAppleScriptControlling {
     private let mediaKeyPrevious: Int32 = 18
 
     func playPause() async throws {
-        try sendSystemMediaKey(mediaKeyPlayPause)
+        // Try system media key first (works with all apps)
+        do {
+            try sendSystemMediaKey(mediaKeyPlayPause)
+        } catch {
+            // Fallback: try AppleScript for Spotify specifically
+            try await sendAppleScriptPlayPause()
+        }
     }
 
     func nextTrack() async throws {
-        try sendSystemMediaKey(mediaKeyNext)
+        // Try system media key first (works with all apps)
+        do {
+            try sendSystemMediaKey(mediaKeyNext)
+        } catch {
+            // Fallback: try AppleScript for Spotify specifically
+            try await sendAppleScriptNext()
+        }
     }
 
     func previousTrack() async throws {
-        try sendSystemMediaKey(mediaKeyPrevious)
+        // Try system media key first (works with all apps)
+        do {
+            try sendSystemMediaKey(mediaKeyPrevious)
+        } catch {
+            // Fallback: try AppleScript for Spotify specifically
+            try await sendAppleScriptPrevious()
+        }
+    }
+    
+    // MARK: - AppleScript Fallback Methods
+    
+    private func sendAppleScriptPlayPause() async throws {
+        _ = try run(script: """
+        tell application "Spotify"
+            playpause
+        end tell
+        """)
+    }
+    
+    private func sendAppleScriptNext() async throws {
+        _ = try run(script: """
+        tell application "Spotify"
+            next track
+        end tell
+        """)
+    }
+    
+    private func sendAppleScriptPrevious() async throws {
+        _ = try run(script: """
+        tell application "Spotify"
+            previous track
+        end tell
+        """)
     }
 
     func currentPlayback() async throws -> PlaybackSnapshot {
@@ -97,8 +141,11 @@ struct MusicAppleScriptClient: MusicAppleScriptControlling {
 
     private func sendSystemMediaKey(_ keyType: Int32) throws {
         // Post key down and key up for a system-defined media key event.
+        // This simulates pressing the media keys on your keyboard
+        NSLog("[MusicControl] Sending system media key: \(keyType)")
         try postMediaKeyEvent(keyType: keyType, isKeyDown: true)
         try postMediaKeyEvent(keyType: keyType, isKeyDown: false)
+        NSLog("[MusicControl] Successfully sent media key")
     }
 
     private func postMediaKeyEvent(keyType: Int32, isKeyDown: Bool) throws {
@@ -117,12 +164,16 @@ struct MusicAppleScriptClient: MusicAppleScriptControlling {
             data1: data1,
             data2: -1
         ) else {
+            NSLog("[MusicControl] ERROR: Failed to create media key event")
             throw MusicControlError.unknown("Failed to create media key event.")
         }
 
         guard let cgEvent = event.cgEvent else {
+            NSLog("[MusicControl] ERROR: Failed to convert to CGEvent")
             throw MusicControlError.unknown("Failed to convert media key event.")
         }
+        
+        // Post the event to the HID event tap
         cgEvent.post(tap: .cghidEventTap)
     }
 }
