@@ -6,33 +6,160 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F44A333D2F9B05D500357DCB /* KittyMusicControllerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A333B2F9B05D500357DCB /* KittyMusicControllerApp.swift */; };
+		F44A333E2F9B05D500357DCB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F44A33392F9B05D500357DCB /* Assets.xcassets */; };
+		F44A33432F9B06AF00357DCB /* AppCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A333F2F9B06AF00357DCB /* AppCommands.swift */; };
+		F44A33442F9B06AF00357DCB /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A33402F9B06AF00357DCB /* AppState.swift */; };
+		F44A33452F9B06AF00357DCB /* dancing-kitty.gif in Resources */ = {isa = PBXBuildFile; fileRef = F44A33412F9B06AF00357DCB /* dancing-kitty.gif */; };
+		F44A33462F9B06AF00357DCB /* kitty-no-music.png in Resources */ = {isa = PBXBuildFile; fileRef = F44A33422F9B06AF00357DCB /* kitty-no-music.png */; };
+		F44A33502F9B06B700357DCB /* KittyMusicControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A33472F9B06B700357DCB /* KittyMusicControllerTests.swift */; };
+		F44A33512F9B06B700357DCB /* MenuBarContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A33482F9B06B700357DCB /* MenuBarContentView.swift */; };
+		F44A33522F9B06B700357DCB /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A33492F9B06B700357DCB /* MenuBarController.swift */; };
+		F44A33532F9B06B700357DCB /* PlaybackCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A334A2F9B06B700357DCB /* PlaybackCoordinator.swift */; };
+		F44A33542F9B06B700357DCB /* PlaybackLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A334B2F9B06B700357DCB /* PlaybackLogic.swift */; };
+		F44A33552F9B06B700357DCB /* Previews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A334C2F9B06B700357DCB /* Previews.swift */; };
+		F44A33562F9B06B700357DCB /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A334D2F9B06B700357DCB /* SettingsView.swift */; };
+		F44A33572F9B06B700357DCB /* MusicAppleScriptClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A334E2F9B06B700357DCB /* MusicAppleScriptClient.swift */; };
+		F44A33582F9B06B700357DCB /* PlaybackModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A334F2F9B06B700357DCB /* PlaybackModels.swift */; };
+		F44A33822F9B091B00357DCB /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F44A33812F9B091B00357DCB /* README.md */; };
+		F44A338F2F9B0B3300357DCB /* GlassEffectContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44A338E2F9B0B3300357DCB /* GlassEffectContainer.swift */; };
+		F44A33AA2F9B100600357DCB /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = F44A33A92F9B100600357DCB /* AsyncAlgorithms */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		F44A33392F9B05D500357DCB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F44A333B2F9B05D500357DCB /* KittyMusicControllerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KittyMusicControllerApp.swift; sourceTree = "<group>"; };
+		F44A333F2F9B06AF00357DCB /* AppCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCommands.swift; sourceTree = "<group>"; };
+		F44A33402F9B06AF00357DCB /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		F44A33412F9B06AF00357DCB /* dancing-kitty.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "dancing-kitty.gif"; sourceTree = "<group>"; };
+		F44A33422F9B06AF00357DCB /* kitty-no-music.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kitty-no-music.png"; sourceTree = "<group>"; };
+		F44A33472F9B06B700357DCB /* KittyMusicControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KittyMusicControllerTests.swift; sourceTree = "<group>"; };
+		F44A33482F9B06B700357DCB /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
+		F44A33492F9B06B700357DCB /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
+		F44A334A2F9B06B700357DCB /* PlaybackCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackCoordinator.swift; sourceTree = "<group>"; };
+		F44A334B2F9B06B700357DCB /* PlaybackLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackLogic.swift; sourceTree = "<group>"; };
+		F44A334C2F9B06B700357DCB /* Previews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Previews.swift; sourceTree = "<group>"; };
+		F44A334D2F9B06B700357DCB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F44A334E2F9B06B700357DCB /* MusicAppleScriptClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicAppleScriptClient.swift; sourceTree = "<group>"; };
+		F44A334F2F9B06B700357DCB /* PlaybackModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackModels.swift; sourceTree = "<group>"; };
+		F44A33812F9B091B00357DCB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F44A338E2F9B0B3300357DCB /* GlassEffectContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassEffectContainer.swift; sourceTree = "<group>"; };
 		F47DCA632F9B017300FBE83E /* KittyMusicController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KittyMusicController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		F47DCA652F9B017300FBE83E /* KittyMusicController */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = KittyMusicController;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		F47DCA602F9B017300FBE83E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F44A33AA2F9B100600357DCB /* AsyncAlgorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F44A339A2F9B0D0800357DCB /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F44A333B2F9B05D500357DCB /* KittyMusicControllerApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		F44A339B2F9B0D1000357DCB /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F44A33402F9B06AF00357DCB /* AppState.swift */,
+				F44A334F2F9B06B700357DCB /* PlaybackModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F44A339C2F9B0D1B00357DCB /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F44A334E2F9B06B700357DCB /* MusicAppleScriptClient.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F44A339D2F9B0D2700357DCB /* Coordinators */ = {
+			isa = PBXGroup;
+			children = (
+				F44A334A2F9B06B700357DCB /* PlaybackCoordinator.swift */,
+			);
+			path = Coordinators;
+			sourceTree = "<group>";
+		};
+		F44A339E2F9B0D2F00357DCB /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				F44A339F2F9B0D3700357DCB /* MenuBar */,
+				F44A33A02F9B0D4200357DCB /* Settings */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		F44A339F2F9B0D3700357DCB /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				F44A33492F9B06B700357DCB /* MenuBarController.swift */,
+				F44A33482F9B06B700357DCB /* MenuBarContentView.swift */,
+				F44A338E2F9B0B3300357DCB /* GlassEffectContainer.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		F44A33A02F9B0D4200357DCB /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				F44A334D2F9B06B700357DCB /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		F44A33A12F9B0D4800357DCB /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F44A333F2F9B06AF00357DCB /* AppCommands.swift */,
+				F44A334B2F9B06B700357DCB /* PlaybackLogic.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		F44A33A22F9B0D5000357DCB /* Previews */ = {
+			isa = PBXGroup;
+			children = (
+				F44A334C2F9B06B700357DCB /* Previews.swift */,
+			);
+			path = Previews;
+			sourceTree = "<group>";
+		};
+		F44A33A32F9B0D5700357DCB /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F44A33472F9B06B700357DCB /* KittyMusicControllerTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		F47DCA5A2F9B017200FBE83E = {
 			isa = PBXGroup;
 			children = (
-				F47DCA652F9B017300FBE83E /* KittyMusicController */,
+				F44A339A2F9B0D0800357DCB /* App */,
+				F44A339B2F9B0D1000357DCB /* Models */,
+				F44A339C2F9B0D1B00357DCB /* Services */,
+				F44A339D2F9B0D2700357DCB /* Coordinators */,
+				F44A339E2F9B0D2F00357DCB /* UI */,
+				F44A33A12F9B0D4800357DCB /* Utilities */,
+				F44A33A22F9B0D5000357DCB /* Previews */,
+				F44A33A32F9B0D5700357DCB /* Tests */,
+				F44A33392F9B05D500357DCB /* Assets.xcassets */,
+				F44A33412F9B06AF00357DCB /* dancing-kitty.gif */,
+				F44A33422F9B06AF00357DCB /* kitty-no-music.png */,
+				F44A33812F9B091B00357DCB /* README.md */,
 				F47DCA642F9B017300FBE83E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -60,11 +187,9 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				F47DCA652F9B017300FBE83E /* KittyMusicController */,
-			);
 			name = KittyMusicController;
 			packageProductDependencies = (
+				F44A33A92F9B100600357DCB /* AsyncAlgorithms */,
 			);
 			productName = KittyMusicController;
 			productReference = F47DCA632F9B017300FBE83E /* KittyMusicController.app */;
@@ -94,6 +219,9 @@
 			);
 			mainGroup = F47DCA5A2F9B017200FBE83E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F44A33A82F9B100600357DCB /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F47DCA642F9B017300FBE83E /* Products */;
 			projectDirPath = "";
@@ -109,6 +237,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F44A333E2F9B05D500357DCB /* Assets.xcassets in Resources */,
+				F44A33822F9B091B00357DCB /* README.md in Resources */,
+				F44A33452F9B06AF00357DCB /* dancing-kitty.gif in Resources */,
+				F44A33462F9B06AF00357DCB /* kitty-no-music.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +251,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F44A33502F9B06B700357DCB /* KittyMusicControllerTests.swift in Sources */,
+				F44A33512F9B06B700357DCB /* MenuBarContentView.swift in Sources */,
+				F44A33522F9B06B700357DCB /* MenuBarController.swift in Sources */,
+				F44A338F2F9B0B3300357DCB /* GlassEffectContainer.swift in Sources */,
+				F44A33532F9B06B700357DCB /* PlaybackCoordinator.swift in Sources */,
+				F44A33542F9B06B700357DCB /* PlaybackLogic.swift in Sources */,
+				F44A33552F9B06B700357DCB /* Previews.swift in Sources */,
+				F44A33562F9B06B700357DCB /* SettingsView.swift in Sources */,
+				F44A33572F9B06B700357DCB /* MusicAppleScriptClient.swift in Sources */,
+				F44A33582F9B06B700357DCB /* PlaybackModels.swift in Sources */,
+				F44A33432F9B06AF00357DCB /* AppCommands.swift in Sources */,
+				F44A33442F9B06AF00357DCB /* AppState.swift in Sources */,
+				F44A333D2F9B05D500357DCB /* KittyMusicControllerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +476,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F44A33A82F9B100600357DCB /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-async-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F44A33A92F9B100600357DCB /* AsyncAlgorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F44A33A82F9B100600357DCB /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
+			productName = AsyncAlgorithms;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F47DCA5B2F9B017200FBE83E /* Project object */;
 }
