@@ -82,8 +82,7 @@ final class MenuBarController {
 
     private func updateStatusIcon(isPlaying: Bool) {
         guard let button = statusItem.button else { return }
-        let imageName = isPlaying ? "music.note.house.fill" : "music.note.house"
-        button.image = NSImage(systemSymbolName: imageName, accessibilityDescription: "Kitty Music Controller")
+        button.image = NSImage(systemSymbolName: "music.note", accessibilityDescription: "Kitty Music Controller")
         button.image?.isTemplate = true
     }
 

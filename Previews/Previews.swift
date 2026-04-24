@@ -48,31 +48,31 @@ private func makePreviewEnvironment(withPlayback: Bool, isPlaying: Bool = true, 
     return (appState, coordinator)
 }
 
-#Preview("Menu Bar Content - Playing") {
+#Preview(traits: .sizeThatFitsLayout) {
     @MainActor in
     let (appState, coordinator) = makePreviewEnvironment(withPlayback: true, isPlaying: true)
     MenuBarContentView(appState: appState, coordinator: coordinator)
 }
 
-#Preview("Menu Bar Content - Paused") {
+#Preview(traits: .sizeThatFitsLayout) {
     @MainActor in
     let (appState, coordinator) = makePreviewEnvironment(withPlayback: true, isPlaying: false)
     MenuBarContentView(appState: appState, coordinator: coordinator)
 }
 
-#Preview("Menu Bar Content - No Playback") {
+#Preview(traits: .sizeThatFitsLayout) {
     @MainActor in
     let (appState, coordinator) = makePreviewEnvironment(withPlayback: false)
     MenuBarContentView(appState: appState, coordinator: coordinator)
 }
 
-#Preview("Menu Bar Content - Error State") {
+#Preview(traits: .sizeThatFitsLayout) {
     @MainActor in
     let (appState, coordinator) = makePreviewEnvironment(withPlayback: false, hasError: true)
     MenuBarContentView(appState: appState, coordinator: coordinator)
 }
 
-#Preview("Settings") {
+#Preview(traits: .sizeThatFitsLayout) {
     @MainActor in
     let (appState, _) = makePreviewEnvironment()
     SettingsView(appState: appState)
